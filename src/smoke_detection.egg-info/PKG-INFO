@@ -1,0 +1,17 @@
+Metadata-Version: 2.2
+Name: smoke_detection
+Version: 1.0.0
+Summary: App to make predictions of forest fire
+Home-page: https://github.com/renneruan/desafio-data-science-2025
+Author: renneruan
+Author-email: renneruan@hotmail.com
+Project-URL: Bug Tracker, https://github.com/renneruan/desafio-data-science-2025/issues
+Dynamic: author
+Dynamic: author-email
+Dynamic: description
+Dynamic: home-page
+Dynamic: project-url
+Dynamic: summary
+
+# desafio-data-science-2025
+Repositório contendo projeto end-to-end de detecção de fumaça para o desafio Data Science 1,5ºC
