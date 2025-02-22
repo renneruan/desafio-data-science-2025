@@ -36,7 +36,8 @@
     <div id="form-prediction" class="text-center row" width="100%">
         <div class="container mt-5 center col-10">
             <h2 class="mb-4">Detecção de Fumaça</h2>
-            <form method="POST" class="row g-3" action="/predict">
+            <form id="prediction-form" method="POST" class="row g-3" action="/predict" enctype="multipart/form-data">
+                <input type="file" name="file" required>
                 <div class="col-12 text-center">
                     <button type="button" class="btn btn-primary" id="openModal">Submeter</button>
                 </div>
@@ -87,20 +88,21 @@
 
 
                 // Collect form data
-                var formData = $("form").serialize();
+                var formData = new FormData($("#prediction-form")[0]);
 
-                // Send AJAX request to Flask API
+                console.log(formData)
+
                 $.ajax({
                     type: "POST",
-                    url: "/predict",  // Change to your actual API endpoint
+                    url: "/predict",
                     data: formData,
+                    processData: false, 
+                    contentType: false,
                     success: function (response) {
-                        // Update modal with success message
                         console.log(response)
 
                     },
                     error: function (xhr, status, error) {
-                        // Update modal with error message
                         $("#submitModalLabel").text("Erro");
                         $("#modalMessage").html(`<strong>Something went wrong:</strong> ${xhr.responseText}`);
                     }
