@@ -56,7 +56,10 @@
                 </div>
                 <div class="modal-body">
                     <p id="modalMessage">Por favor aguarde.</p>
-                    <h1 id="modalProb"></h1>
+                    <div id="image-container" style="display:none;">
+                        <h3>Imagem de Retorno</h3>
+                        <img id="result-image" src="" alt="Imagem de Retorno" style="max-width: 100%; margin-top: 20px;">
+                    </div>
 
                 </div>
                 <div class="modal-footer">
@@ -77,17 +80,14 @@
                 var form = $("form")[0];
 
                 if (!form.checkValidity()) {
-                    form.classList.add("was-validated");  // Add Bootstrap validation style
+                    form.classList.add("was-validated");
                     return;
                 }
 
                 $("#submitModal").modal("show");  // Open modal
-                $("#submitModalLabel").text("Submetendo formulário...");
-                $("#modalMessage").text("Aguarde a conclusão da análise.");
-                // $("#modalProb").html("");
+                $("#submitModalLabel").text("Submetendo imagem...");
+                // $("#modalMessage").text("Aguarde a conclusão da análise.");
 
-
-                // Collect form data
                 var formData = new FormData($("#prediction-form")[0]);
 
                 console.log(formData)
@@ -100,6 +100,14 @@
                     contentType: false,
                     success: function (response) {
                         console.log(response)
+                        $("#modalMessage").text(JSON.stringify(response.predictions));
+    
+                        console.log(response.output_path)
+                        $('#result-image').attr('src', response.output_path);
+
+                        // Exibir as imagens no frontend
+                        $('#image-container').show(); 
+
 
                     },
                     error: function (xhr, status, error) {

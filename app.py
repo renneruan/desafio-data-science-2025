@@ -6,16 +6,16 @@ import os
 from datetime import datetime
 from PIL import Image
 from werkzeug.utils import secure_filename
-from flask import Flask, render_template, request
+from flask import Flask, jsonify, render_template, request, send_from_directory
 
 from smoke_detection.pipeline.prediction import PredictionPipeline
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = "artifacts/predictions"
+ARTIFACTS_FOLDER = "artifacts/"
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["ARTIFACTS_FOLDER"] = ARTIFACTS_FOLDER
 
 
 def allowed_file(filename):
@@ -51,7 +51,10 @@ def index():
             timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
             prediction_folder = os.path.join(
-                app.config["UPLOAD_FOLDER"], today_date, timestamp
+                app.config["ARTIFACTS_FOLDER"],
+                "predictions/",
+                today_date,
+                timestamp,
             )
             os.makedirs(prediction_folder, exist_ok=True)
 
@@ -66,29 +69,20 @@ def index():
 
             # TODO Aplicar pré-processamento
 
-            results = obj.predict("test.jpg")
+            results = obj.predict(filepath)
 
-            predictions = []
-            for result in results:
-                for box in result.boxes:
-                    predictions.append(
-                        {
-                            "xmin": float(box.xyxy[0][0]),
-                            "ymin": float(box.xyxy[0][1]),
-                            "xmax": float(box.xyxy[0][2]),
-                            "ymax": float(box.xyxy[0][3]),
-                            "confidence": float(box.conf[0]),
-                            "class_id": int(box.cls[0]),
-                        }
-                    )
-
-            return {"predictions": predictions}
+            return jsonify(results)
 
         return "Arquivo não permitido.", 400
 
     except ValueError as e:
         print(f"Não foi possível: {e}")
         return "falha"
+
+
+@app.route("/artifacts/<path:filename>")
+def serve_image(filename):
+    return send_from_directory(app.config["ARTIFACTS_FOLDER"], filename)
 
 
 if __name__ == "__main__":
