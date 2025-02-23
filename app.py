@@ -3,15 +3,18 @@ Módulo com funções de endpoint a serem servidas pela API Flask.
 """
 
 import os
+import random
 from datetime import datetime
 from PIL import Image
 from werkzeug.utils import secure_filename
 from flask import Flask, jsonify, render_template, request, send_from_directory
 
 from smoke_detection.pipeline.prediction import PredictionPipeline
+from smoke_detection import logger
 
 app = Flask(__name__)
 
+TEST_IMAGES_FOLDER = "datasets/data/test/images/"
 ARTIFACTS_FOLDER = "artifacts/"
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 
@@ -74,6 +77,37 @@ def index():
             return jsonify(results)
 
         return "Arquivo não permitido.", 400
+
+    except ValueError as e:
+        print(f"Não foi possível: {e}")
+        return "falha"
+
+
+@app.route("/predict_multiple", methods=["GET"])
+def get_random_predictions():
+    """Endpoint de predição de múltiplas imagens e aleatórias"""
+    try:
+        image_files = [
+            f for f in os.listdir(TEST_IMAGES_FOLDER) if f.endswith((".jpg"))
+        ]
+        random_images = random.sample(image_files, 5)
+        logger.info(random_images)
+
+        all_results = []
+        for image_path in random_images:
+            # Abrir a imagem para verificar (opcional)
+            image = Image.open(image_path)
+            image.verify()
+
+            obj = PredictionPipeline()
+
+            # TODO Aplicar pré-processamento
+
+            results = obj.predict(image_path)
+
+            all_results.append(results)
+
+        return jsonify(results)
 
     except ValueError as e:
         print(f"Não foi possível: {e}")

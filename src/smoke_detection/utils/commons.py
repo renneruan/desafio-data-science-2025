@@ -1,6 +1,8 @@
 from pathlib import Path
 import yaml
 
+from smoke_detection import logger
+
 
 def read_yaml(path_to_yaml: Path):
     """
@@ -23,7 +25,10 @@ def read_yaml(path_to_yaml: Path):
         with open(path_to_yaml, encoding="UTF-8") as yaml_file:
             # Safe load é utilizado para evitar execução de código malicioso
             content = yaml.safe_load(yaml_file)
-            print(f"Arquivo yaml: {path_to_yaml} carregado com sucesso.")
+            logger.info(
+                "Arquivo yaml: %s carregado com sucesso.", path_to_yaml
+            )
+            # print(f"Arquivo yaml: {path_to_yaml} carregado com sucesso.")
             return content
     except ValueError as exc:
         raise ValueError("Arquivo yaml está vazio.") from exc

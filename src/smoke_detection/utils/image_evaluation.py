@@ -1,6 +1,8 @@
 import os
 import cv2
 
+from smoke_detection import logger
+
 
 def draw_bboxes_on_image(image_path, label_file_path, output_path):
     img = cv2.imread(image_path)
@@ -58,5 +60,5 @@ def iterate_images_and_labels(input_images_dir, output_dir):
                 )
                 labels_list.append(label_result)
 
-    print("Imagens para avaliação visual criadas.")
+    logger.info("Imagens para avaliação visual criadas.")
     return labels_list

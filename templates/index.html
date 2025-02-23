@@ -36,39 +36,33 @@
     <div id="form-prediction" class="text-center row" width="100%">
         <div class="container mt-5 center col-10">
             <h2 class="mb-4">Detecção de Fumaça</h2>
-            <form id="prediction-form" method="POST" class="row g-3" action="/predict" enctype="multipart/form-data">
-                <input type="file" name="file" required>
+            <p class="mb-2">Selecione uma imagem para realizar a detecção, ou se preferir, é possível gerar predições
+                múltiplas e aléatórias a partir das imagens de teste.</h4>
+            <form id="prediction-form" method="POST" class="row g-3 center" action="/predict"
+                enctype="multipart/form-data">
                 <div class="col-12 text-center">
-                    <button type="button" class="btn btn-primary" id="openModal">Submeter</button>
+                    <input type="file" name="file" required>
+                    <button type="button" class="btn btn-primary" id="predict-one">Submeter</button>
+                    <button type="button" class="btn btn-primary" id="predict-random">Gerar predições
+                        aleatórias</button>
                 </div>
-            <!-- Submit Button -->
+
+                <div id="results-container" class="col-12 text-center" style="display:none;">
+                    <p id="loading-message" class="mt-2">Por favor aguarde...</p>
+                    <p id="result-values" class="mt-2"></p>
+
+                    <div id="image-container" style="display:none;">
+                        <!-- <h3>Imagem de Retorno</h3> -->
+                        <img id="result-image" src="" alt="Imagem de Retorno"
+                            style="max-width: 100%; margin-top: 20px;">
+                    </div>
+                </div>
+                <!-- Submit Button -->
 
             </form>
 
         </div>
     </div>
-    <div class="modal fade" id="submitModal" tabindex="-1" aria-labelledby="submitModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="submitModalLabel">Submetendo...</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p id="modalMessage">Por favor aguarde.</p>
-                    <div id="image-container" style="display:none;">
-                        <h3>Imagem de Retorno</h3>
-                        <img id="result-image" src="" alt="Imagem de Retorno" style="max-width: 100%; margin-top: 20px;">
-                    </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
 
     <footer class="bg-dark text-white text-center py-2">
         <p class="mb-0">&copy; 2024 Rennê Oliveira.</p>
@@ -76,7 +70,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
-            $("#openModal").click(function () {
+            $("#predict-one").click(function () {
                 var form = $("form")[0];
 
                 if (!form.checkValidity()) {
@@ -84,9 +78,11 @@
                     return;
                 }
 
-                $("#submitModal").modal("show");  // Open modal
-                $("#submitModalLabel").text("Submetendo imagem...");
-                // $("#modalMessage").text("Aguarde a conclusão da análise.");
+                $("#results-container").show();
+                $("#loading-message").text("Por favor aguarde...").show();
+                $("#result-values").text("");
+                $('#result-image').attr('src', "");
+                $('#image-container').hide();
 
                 var formData = new FormData($("#prediction-form")[0]);
 
@@ -96,23 +92,53 @@
                     type: "POST",
                     url: "/predict",
                     data: formData,
-                    processData: false, 
+                    processData: false,
                     contentType: false,
                     success: function (response) {
                         console.log(response)
-                        $("#modalMessage").text(JSON.stringify(response.predictions));
-    
+                        $("#result-values").text(JSON.stringify(response.predictions));
+
                         console.log(response.output_path)
                         $('#result-image').attr('src', response.output_path);
-
-                        // Exibir as imagens no frontend
-                        $('#image-container').show(); 
-
-
+                        $('#image-container').show();
+                        $("#loading-message").hide();
                     },
                     error: function (xhr, status, error) {
-                        $("#submitModalLabel").text("Erro");
-                        $("#modalMessage").html(`<strong>Something went wrong:</strong> ${xhr.responseText}`);
+                        $("#loading-message").text("Ocorreu um erro na etapa de predição");
+                        $("#result-values").html(`<strong>Erro:</strong> ${xhr.responseText}`);
+                    }
+                });
+            });
+
+            $("#predict-random").click(function () {
+                $("#results-container").show();
+                $("#loading-message").text("Por favor aguarde...").show();
+                $("#result-values").text("");
+                $('#result-image').attr('src', "");
+                $('#image-container').hide();
+
+                var formData = new FormData($("#prediction-form")[0]);
+
+                console.log(formData)
+
+                $.ajax({
+                    type: "GET",
+                    url: "/predict_multiple",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        console.log(response)
+                        $("#result-values").text(JSON.stringify(response.predictions));
+
+                        console.log(response.output_path)
+                        $('#result-image').attr('src', response.output_path);
+                        $('#image-container').show();
+                        $("#loading-message").hide();
+                    },
+                    error: function (xhr, status, error) {
+                        $("#loading-message").text("Ocorreu um erro na etapa de predição");
+                        $("#result-values").html(`<strong>Erro:</strong> ${xhr.responseText}`);
                     }
                 });
             });
