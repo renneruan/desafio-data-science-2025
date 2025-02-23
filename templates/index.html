@@ -58,6 +58,43 @@
                     </div>
                 </div>
                 <!-- Submit Button -->
+                <div id="multiple-results-container" class="col-12 text-center" style="display:none;">
+                    <p id="loading-message" class="mt-2">Por favor aguarde...</p>
+                
+                    <div id="results-row" class="row justify-content-center" style="display:none;">
+                        <!-- Static result blocks (without text, only images) -->
+                        <div class="col-md-2 text-center result-box">
+                            <div class="mt-2">
+                                <img id="result-image-1" src="" alt="Imagem 1" style="max-width: 100%; margin-top: 10px;">
+                            </div>
+                        </div>
+                
+                        <div class="col-md-2 text-center result-box">
+                            <div class="mt-2">
+                                <img id="result-image-2" src="" alt="Imagem 2" style="max-width: 100%; margin-top: 10px;">
+                            </div>
+                        </div>
+                
+                        <div class="col-md-2 text-center result-box">
+                            <div class="mt-2">
+                                <img id="result-image-3" src="" alt="Imagem 3" style="max-width: 100%; margin-top: 10px;">
+                            </div>
+                        </div>
+                
+                        <div class="col-md-2 text-center result-box">
+                            <div class="mt-2">
+                                <img id="result-image-4" src="" alt="Imagem 4" style="max-width: 100%; margin-top: 10px;">
+                            </div>
+                        </div>
+                
+                        <div class="col-md-2 text-center result-box">
+                            <div class="mt-2">
+                                <img id="result-image-5" src="" alt="Imagem 5" style="max-width: 100%; margin-top: 10px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
 
             </form>
 
@@ -111,30 +148,27 @@
             });
 
             $("#predict-random").click(function () {
-                $("#results-container").show();
+                $("#results-container").hide();
+                $("#multiple-results-container").show();
+
+                $("#results-row").hide()
                 $("#loading-message").text("Por favor aguarde...").show();
-                $("#result-values").text("");
-                $('#result-image').attr('src', "");
-                $('#image-container').hide();
 
-                var formData = new FormData($("#prediction-form")[0]);
-
-                console.log(formData)
-
+                for (let i = 0; i < 5; i++) {
+                    $(".result-image-" + (i+1)).attr('src', "");
+                }
                 $.ajax({
                     type: "GET",
                     url: "/predict_multiple",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
                     success: function (response) {
-                        console.log(response)
-                        $("#result-values").text(JSON.stringify(response.predictions));
+                        for (let i = 0; i < 5; i++) {
+                            $("#result-image-" + (i+1)).attr('src', response[i].output_path);
+                        }
 
-                        console.log(response.output_path)
-                        $('#result-image').attr('src', response.output_path);
-                        $('#image-container').show();
                         $("#loading-message").hide();
+                        
+                        $("#results-row").show()
+                        $("#multiple-results-container").show();
                     },
                     error: function (xhr, status, error) {
                         $("#loading-message").text("Ocorreu um erro na etapa de predição");

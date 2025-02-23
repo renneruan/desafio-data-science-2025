@@ -7,7 +7,9 @@ import random
 from datetime import datetime
 from PIL import Image
 from werkzeug.utils import secure_filename
+from werkzeug.datastructures import FileStorage  # Import FileStorage
 from flask import Flask, jsonify, render_template, request, send_from_directory
+
 
 from smoke_detection.pipeline.prediction import PredictionPipeline
 from smoke_detection import logger
@@ -28,6 +30,25 @@ def allowed_file(filename):
     )
 
 
+def create_file_on_prediction_folder(file):
+    filename = secure_filename(file.filename)
+    today_date = datetime.today().strftime("%Y-%m-%d")
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
+    prediction_folder = os.path.join(
+        app.config["ARTIFACTS_FOLDER"],
+        "predictions/",
+        today_date,
+        timestamp,
+    )
+    os.makedirs(prediction_folder, exist_ok=True)
+
+    filepath = os.path.join(prediction_folder, filename)
+    file.save(filepath)
+
+    return filepath
+
+
 @app.route("/", methods=["GET"])
 def homePage():
     """Home page a ser renderizada"""
@@ -39,8 +60,6 @@ def index():
     """Endpoint de predição para verificação de fumaça"""
     try:
         # imagem_recebida
-
-        print(request.files)
         if "file" not in request.files:
             return "Imagem não enviada.", 400
 
@@ -49,20 +68,7 @@ def index():
             return "Nenhum arquivo selecionado.", 400
 
         if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            today_date = datetime.today().strftime("%Y-%m-%d")
-            timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-
-            prediction_folder = os.path.join(
-                app.config["ARTIFACTS_FOLDER"],
-                "predictions/",
-                today_date,
-                timestamp,
-            )
-            os.makedirs(prediction_folder, exist_ok=True)
-
-            filepath = os.path.join(prediction_folder, filename)
-            file.save(filepath)
+            filepath = create_file_on_prediction_folder(file)
 
             # Abrir a imagem para verificar (opcional)
             image = Image.open(filepath)
@@ -94,20 +100,29 @@ def get_random_predictions():
         logger.info(random_images)
 
         all_results = []
-        for image_path in random_images:
+        for image_name in random_images:
             # Abrir a imagem para verificar (opcional)
-            image = Image.open(image_path)
+            image_path = os.path.join(TEST_IMAGES_FOLDER, image_name)
+
+            with open(image_path, "rb") as file:
+                file_obj = FileStorage(
+                    file, filename=image_name
+                )  # Criar um objeto similar ao de upload
+                filepath = create_file_on_prediction_folder(file_obj)
+
+            image = Image.open(filepath)
             image.verify()
 
             obj = PredictionPipeline()
 
             # TODO Aplicar pré-processamento
 
-            results = obj.predict(image_path)
+            results = obj.predict(filepath)
 
             all_results.append(results)
 
-        return jsonify(results)
+        print(all_results)
+        return jsonify(all_results)
 
     except ValueError as e:
         print(f"Não foi possível: {e}")
