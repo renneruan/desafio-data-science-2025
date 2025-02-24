@@ -1,3 +1,7 @@
+"""
+Módulo contendo funções de treinamento
+"""
+
 import os
 
 # import cv2
