@@ -17,7 +17,7 @@ https://colab.research.google.com/github/renneruan/desafio-data-science-2025/blo
 
 ## Treinamento e ambiente
 
-O Treinamento pode ser realizado novamente seguindo a disposição de células.
+O Treinamento pode ser realizado novamente seguindo a disposição de células a partir do Google Colab.
 
 Além disso, caso você possua placa de vídeo em sua máquina, o treinamento pode ser realizada a partir da execução do script `main.py`, porém antes é necessário instalar o ambiente de dependências.
 
@@ -74,7 +74,7 @@ Obtivemos uma métrica de
 - Tempo de inferência: 4.5ms
 
 Podemos visualizar os gráficos do treinamento gerados pelo YOLO:
-![grafico_resultados](runs/detect/train2.results)
+![grafico_resultados](runs/detect/train6/results.png)
 
 ## Previsões em imagens de teste
 
