@@ -1,8 +1,8 @@
 task: detect
 mode: train
 model: yolo11n.pt
-data: /content/desafio-data-science-2025/datasets/data/data.yaml
-epochs: 20
+data: /content/desafio-data-science-2025/datasets/processed_data/data.yaml
+epochs: 15
 time: null
 patience: 100
 batch: 100

@@ -48,7 +48,7 @@
                 </div>
 
                 <div id="results-container" class="col-12 text-center" style="display:none;">
-                    <p id="loading-message" class="mt-2">Por favor aguarde...</p>
+                    <p id="loading-message-1" class="mt-2">Por favor aguarde...</p>
                     <p id="result-values" class="mt-2"></p>
 
                     <div id="image-container" style="display:none;">
@@ -59,7 +59,7 @@
                 </div>
                 <!-- Submit Button -->
                 <div id="multiple-results-container" class="col-12 text-center" style="display:none;">
-                    <p id="loading-message" class="mt-2">Por favor aguarde...</p>
+                    <p id="loading-message-2" class="mt-2">Por favor aguarde...</p>
                 
                     <div id="results-row" class="row justify-content-center" style="display:none;">
                         <!-- Static result blocks (without text, only images) -->
@@ -116,7 +116,7 @@
                 }
 
                 $("#results-container").show();
-                $("#loading-message").text("Por favor aguarde...").show();
+                $("#loading-message-1").text("Por favor aguarde...").show();
                 $("#result-values").text("");
                 $('#result-image').attr('src', "");
                 $('#image-container').hide();
@@ -138,10 +138,10 @@
                         console.log(response.output_path)
                         $('#result-image').attr('src', response.output_path);
                         $('#image-container').show();
-                        $("#loading-message").hide();
+                        $("#loading-message-1").hide();
                     },
                     error: function (xhr, status, error) {
-                        $("#loading-message").text("Ocorreu um erro na etapa de predição");
+                        $("#loading-message-1").text("Ocorreu um erro na etapa de predição");
                         $("#result-values").html(`<strong>Erro:</strong> ${xhr.responseText}`);
                     }
                 });
@@ -152,7 +152,7 @@
                 $("#multiple-results-container").show();
 
                 $("#results-row").hide()
-                $("#loading-message").text("Por favor aguarde...").show();
+                $("#loading-message-2").text("Por favor aguarde...").show();
 
                 for (let i = 0; i < 5; i++) {
                     $(".result-image-" + (i+1)).attr('src', "");
@@ -165,13 +165,13 @@
                             $("#result-image-" + (i+1)).attr('src', response[i].output_path);
                         }
 
-                        $("#loading-message").hide();
                         
                         $("#results-row").show()
                         $("#multiple-results-container").show();
+                        $("#loading-message-2").text("").hide();
                     },
                     error: function (xhr, status, error) {
-                        $("#loading-message").text("Ocorreu um erro na etapa de predição");
+                        $("#loading-message-2").text("Ocorreu um erro na etapa de predição");
                         $("#result-values").html(`<strong>Erro:</strong> ${xhr.responseText}`);
                     }
                 });

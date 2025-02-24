@@ -6,3 +6,5 @@ brainstorm
 yolo11n.pt
 
 artifacts/predictions
+
+*.egg-info

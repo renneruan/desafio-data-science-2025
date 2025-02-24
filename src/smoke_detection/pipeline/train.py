@@ -47,9 +47,9 @@ def train(**args):
     print(args)
     model.train(
         data=os.path.abspath(DATASET_YAML_PATH),
-        epochs=1,
-        batch=4,
-        # device=0,
+        epochs=15,
+        batch=80,
+        device=0,
         seed=42,
     )
 
