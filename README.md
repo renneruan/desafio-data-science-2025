@@ -84,3 +84,7 @@ Foi criado dois endpoints
 
 `/predict` em que é possível fazer o upload de uma imagem e receber a nova imagem com a predição realizada, além dos valores de bounding box e confiança.
 `/predict_multiple` Em que é possível receber predições aleatórias das imagens presentes no conjunto de teste.
+
+Imagem da interface criada com uma imagem de teste carregada para predição:
+
+![interface](static/captura_form.png)
