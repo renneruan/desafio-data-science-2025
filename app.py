@@ -5,17 +5,18 @@ Módulo com funções de endpoint a serem servidas pela API Flask.
 import os
 import random
 from datetime import datetime
+
 from PIL import Image
 from werkzeug.utils import secure_filename
-from werkzeug.datastructures import FileStorage  # Import FileStorage
+from werkzeug.datastructures import FileStorage
 from flask import Flask, jsonify, render_template, request, send_from_directory
-
 
 from smoke_detection.pipeline.prediction import PredictionPipeline
 from smoke_detection import logger
 
 app = Flask(__name__)
 
+# Constantes com caminhos para as pastas de imagens
 TEST_IMAGES_FOLDER = "datasets/data/test/images/"
 ARTIFACTS_FOLDER = "artifacts/"
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
@@ -24,6 +25,7 @@ app.config["ARTIFACTS_FOLDER"] = ARTIFACTS_FOLDER
 
 
 def allowed_file(filename):
+    """Verifica se a extensão do arquivo é permitida"""
     return (
         "." in filename
         and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -31,6 +33,8 @@ def allowed_file(filename):
 
 
 def create_file_on_prediction_folder(file):
+    """Cria o arquivo de imagem na pasta de predições"""
+
     filename = secure_filename(file.filename)
     today_date = datetime.today().strftime("%Y-%m-%d")
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")

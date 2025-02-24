@@ -16,9 +16,7 @@ from smoke_detection.constants import MODEL_PATH
 
 class PredictionPipeline:
     """
-    Class contendo pipeline de predição, submete os dados de entrada ao mesmo
-    pipeline de transformação ajustado na etapa de pré-processamento dos dados
-    de treino.
+    Class contendo pipeline de predição
     """
 
     def __init__(self):

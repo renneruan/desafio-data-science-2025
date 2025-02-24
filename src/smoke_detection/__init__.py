@@ -1,5 +1,5 @@
 """
-Inicializando estrutura de logs para o módulode de treinamento.
+Inicializando estrutura de logs para o módulo de treinamento.
 """
 
 import os
